@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Share2, FileDown, Plus } from "lucide-react";
+import { Share2, FileDown, Plus, Trash2 } from "lucide-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
@@ -61,10 +61,27 @@ export default function Home() {
     },
   });
 
+  const deleteProduct = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/products/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({
+        title: "Produto removido",
+        description: "O produto foi removido com sucesso.",
+      });
+    },
+  });
+
   const total = products.reduce((sum, p) => sum + Number(p.price), 0);
 
   const onSubmit = (data: any) => {
     addProduct.mutate(data);
+  };
+
+  const handleDeleteProduct = (id: number) => {
+    deleteProduct.mutate(id);
   };
 
   const handleShareWhatsApp = () => {
@@ -76,7 +93,7 @@ export default function Home() {
       });
       return;
     }
-    
+
     const message = formatWhatsAppMessage(products);
     window.open(`https://wa.me/?text=${message}`, "_blank");
   };
@@ -231,6 +248,7 @@ export default function Home() {
                     <TableHead className="text-right">Quantidade</TableHead>
                     <TableHead className="text-right">Preço</TableHead>
                     <TableHead className="text-right">Valor Unitário</TableHead>
+                    <TableHead className="w-[80px]"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -251,11 +269,21 @@ export default function Home() {
                           )
                         )}
                       </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteProduct(product.id)}
+                          className="h-8 w-8"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                   {products.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center">
+                      <TableCell colSpan={5} className="text-center">
                         Nenhum produto adicionado
                       </TableCell>
                     </TableRow>

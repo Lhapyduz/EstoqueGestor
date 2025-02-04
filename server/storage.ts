@@ -3,6 +3,7 @@ import { products, type Product, type InsertProduct } from "@shared/schema";
 export interface IStorage {
   getProducts(): Promise<Product[]>;
   addProduct(product: InsertProduct): Promise<Product>;
+  deleteProduct(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -23,6 +24,10 @@ export class MemStorage implements IStorage {
     const product = { ...insertProduct, id };
     this.products.set(id, product);
     return product;
+  }
+
+  async deleteProduct(id: number): Promise<void> {
+    this.products.delete(id);
   }
 }
 

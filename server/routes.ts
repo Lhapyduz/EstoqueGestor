@@ -19,5 +19,15 @@ export function registerRoutes(app: Express) {
     res.json(product);
   });
 
+  app.delete("/api/products/:id", async (req, res) => {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid product ID" });
+    }
+
+    await storage.deleteProduct(id);
+    res.status(204).end();
+  });
+
   return createServer(app);
 }
