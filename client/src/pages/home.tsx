@@ -38,8 +38,8 @@ export default function Home() {
     resolver: zodResolver(insertProductSchema),
     defaultValues: {
       name: "",
-      quantity: 1,
-      price: 0,
+      quantity: "" as any,
+      price: "" as any,
     },
   });
 
